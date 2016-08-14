@@ -1,0 +1,19 @@
+{
+    "name": "yakovmeister/shitsuji",
+    "description": "Nuff for prototype, let's create the actual app",
+    "authors": [
+        {
+            "name": "Jacob Baring",
+            "email": "electro7bug@gmail.com"
+        }
+    ],
+    "autoload" : {
+        "psr-4" : {
+            "Yakovmeister\\" : "src/"
+        },
+        "files" : [
+        	"src/utils.php"
+        ]
+    },
+    "require": {}
+}

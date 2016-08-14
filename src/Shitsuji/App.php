@@ -112,7 +112,7 @@ class App
      * Quality being selected by user 
      * by default, it'll download 720p quality
      * @access protected
-     * @var String 720p
+     * @var String 480p
      */
     protected $qualitySelection = "720p";
 
@@ -244,10 +244,12 @@ class App
  		
         $this->episodeSelection = empty($episodeNumber) ? $this->episodeSelection + 1 : $episodeNumber;
  		
-        $this->languageSelection = $this->languageSelection == 's' || 'subbed' || 'sub' ? 'subbed' : 'dubbed';
+        $this->languageSelection = $this->languageSelection == 's' 
+                                || $this->languageSelection == 'subbed' 
+                                || $this->languageSelection == 'sub' ? 'subbed' : 'dubbed';
  		
-        $this->qualitySelection = ($this->qualitySelection == '720p' ||
-                $this->qualitySelection == '720') ? '720p' : '480p';
+        $this->qualitySelection = $this->qualitySelection == '720p' ||
+                $this->qualitySelection == '720' ? '720p' : '480p';
 
         return $this->compileWatchLink($animid, $this->episodeSelection, $this->languageSelection, $this->qualitySelection);
 
@@ -436,8 +438,10 @@ class App
         $this->io->n()->n()->console("[sub] or [subbed] or [s] => English Subtitled")->n();
         $this->io->console("[dub] or [dubbed] or [d] => English Dubbed")->n()->n();
 
-        $this->languageSelection = $this->io->gets("What languange preference would you like my lord? (Default: sub) ")
-                                   ?? $this->languageSelection;
+        $selection = $this->io->gets("What language preference would you like my lord? (Default: sub) ");
+
+        if(empty($selection)) $this->languageSelection = $this->languageSelection;
+        else $this->languageSelection = $selection;
 
         return $this;
     }
@@ -454,8 +458,10 @@ class App
         $this->io->n()->n()->console("[480] => 480p");
         $this->io->n()->console("[720] => 720p")->n()->n();
 
-        $this->qualitySelection = $this->io->gets("I suggest you download 720p for higher quality my lord... (Default: 720) ") 
-                                  ?? $this->qualitySelection;
+        $selection = $this->io->gets("I suggest you download 720p for higher quality my lord... (Default: 720) ");
+
+        if(empty($selection)) $this->qualitySelection = $this->qualitySelection;
+        else $this->qualitySelection = $selection;
 
         return $this;
     } 

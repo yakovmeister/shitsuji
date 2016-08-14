@@ -17,8 +17,8 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 * ~~it should allow users to customize download path~~ nonsense, not necessary
 * ~~downloading may be broken (not yet tested due to slow internet connection)~~
 * ~~As of now, downloaded videos are named video.mp4. It will overwrite existing video of same name. Fix will be implemented soon.~~
-* 480p quality is downloaded but 720p is displayed as default
-* Scrapper class not documented.
+* ~~480p quality is downloaded but 720p is displayed as default~~
+* ~~Scrapper class not documented.~~
 * Hoping someone could help me test this.
 
 ##Future Features##
@@ -28,3 +28,4 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 * Anything I might find cool
 * Custom Episode Selections example (1-5 - to download 1 to 5), (1&5 - download only 1 and 5)
 * File checking (skip downloading file if it exists)
+* Anime episode as index

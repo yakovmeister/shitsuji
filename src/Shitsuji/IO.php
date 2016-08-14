@@ -57,6 +57,8 @@ class IO
 
         if($progressFn)
         {
+
+
             ob_start();
             ob_flush();
             flush();	
@@ -64,7 +66,7 @@ class IO
             $this->fileName      = !empty($filename) ? $filename : $this->pageInfo['filename'];
             $this->fileExtension = $this->pageInfo['extension'];
 
-            $this->n()->console("Downloading: {$this->getFile()} ")->n();
+            $this->n()->console("Downloading: {$this->getFileNameOnly()} ")->n();
 
             curl_setopt($handle, CURLOPT_PROGRESSFUNCTION, [$this, "progress"]);
             curl_setopt($handle, CURLOPT_NOPROGRESS, false);
@@ -223,6 +225,19 @@ class IO
     public function getFile()
     {
         return "{$this->get("fileName")}.{$this->get("fileExtension")}";
+    }
+
+    /**
+     * Instead of returning filename with path, return file name only
+     *
+     * @access public
+     * @return String
+     */
+    public function getFileNameOnly()
+    {
+        $filenameArray = explode("/", $this->getFile());
+
+        return $filenameArray[ count($filenameArray) - 1];   
     }
 
     /**

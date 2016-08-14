@@ -12,7 +12,7 @@ class App
      * @access protected 
      * @var String
      */
-	protected $version = "0.2.7";
+	protected $version = "0.2.8";
 
     /**
      * Handles Http requests and response, and file management 
@@ -112,7 +112,7 @@ class App
      * Quality being selected by user 
      * by default, it'll download 720p quality
      * @access protected
-     * @var String 480p
+     * @var String 720p
      */
     protected $qualitySelection = "720p";
 

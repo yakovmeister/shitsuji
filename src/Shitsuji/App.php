@@ -13,7 +13,7 @@ class App
      * @var String
      */
 	protected $version = "0.2.1";
-	
+
     /**
      * Handles Http requests and response, and file management 
      * @access protected 
@@ -153,7 +153,7 @@ class App
         $this->io->n();
         
         $this->searchKey = empty($this->argv[2])
- 	        ? $this->io->gets("What anime would you like to download senpai? ")
+ 	        ? $this->io->gets("What anime would you like to download my lord? ")
  	        : $this->argv[2];
 
         $this->searchTitleAndCache();

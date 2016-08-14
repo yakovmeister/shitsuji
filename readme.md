@@ -9,8 +9,7 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 
 ##Basic Usage##
 * open cmd and type ```php shitsuji --search```
-* you can also try ```php shitsuji --search anime title``` example is provided below:
- `php weebo --search Ansatsu Kyoshitsu`
+* you can also try ```php shitsuji --search anime title``` example: `php weebo --search Ansatsu Kyoshitsu`
 
 ##Notes to Self##
 * this is yet to be tested on Linux

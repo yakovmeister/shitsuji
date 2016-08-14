@@ -64,7 +64,7 @@ class IO
             $this->fileName      = !empty($filename) ? $filename : $this->pageInfo['filename'];
             $this->fileExtension = $this->pageInfo['extension'];
 
-            $this->console->n()->("Downloading: {$this->getFile()} ")->n();
+            $this->n()->console("Downloading: {$this->getFile()} ")->n();
 
             curl_setopt($handle, CURLOPT_PROGRESSFUNCTION, [$this, "progress"]);
             curl_setopt($handle, CURLOPT_NOPROGRESS, false);

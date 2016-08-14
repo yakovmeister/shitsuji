@@ -12,7 +12,7 @@ class App
      * @access protected 
      * @var String
      */
-	protected $version = "0.2.1";
+	protected $version = "0.2.7";
 
     /**
      * Handles Http requests and response, and file management 
@@ -246,8 +246,8 @@ class App
  		
         $this->languageSelection = $this->languageSelection == 's' || 'subbed' || 'sub' ? 'subbed' : 'dubbed';
  		
-        $this->qualitySelection = $this->qualitySelection == '720p' ||
-                $this->qualitySelection == '720' ? '720p' : '480p';
+        $this->qualitySelection = ($this->qualitySelection == '720p' ||
+                $this->qualitySelection == '720') ? '720p' : '480p';
 
         return $this->compileWatchLink($animid, $this->episodeSelection, $this->languageSelection, $this->qualitySelection);
 
@@ -363,11 +363,14 @@ class App
                 $this->io->console("[{$key}] => {$title}")->n();
             }
 
-            $selection = $this->io->n()->gets("Demo... that's a lot my lord, please pick one: (Default: 0) ");
+            if($listCount > 1)
+            {
+                $selection = $this->io->n()->gets("Demo... that's a lot my lord, please pick one: (Default: 0) ");
 
-            if(empty($selection)) $this->animeSelection = $this->animeSelection;
-            elseif($selection <= $listCount && $selection >= 0) $this->animeSelection = $selection;
-            else die("That's not a valid number my lord. Gomen.");
+                if(empty($selection)) $this->animeSelection = $this->animeSelection;
+                elseif($selection <= $listCount && $selection >= 0) $this->animeSelection = $selection;
+                else die("That's not a valid number my lord. Gomen.");	
+            }
 
             $this->animeDetail["title"] = $this->scrapeTitleList()[$this->animeSelection];
         }
@@ -405,9 +408,12 @@ class App
 
             $selection = $this->io->gets("Anou... Which one of this should I download? (Default: 0) ");
 
-           if(empty($selection)) $this->episodeSelection = $this->episodeSelection;
-           elseif($selection >= 0) $this->episodeSelection = $selection;
-           else die("That's not a valid number my lord. Gomen.");
+            if($listCount > 1)
+            {
+                if(empty($selection)) $this->episodeSelection = $this->episodeSelection; 
+                elseif($selection >= 0) $this->episodeSelection = $selection;
+                else die("That's not a valid number my lord. Gomen.");	
+            }
 
         }
         else

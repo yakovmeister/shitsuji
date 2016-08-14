@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 
 /**
@@ -17,3 +16,4 @@ ini_set("memory_limit", "-1");
 
 $app = new \Yakovmeister\Shitsuji\App;
 $app->run();
+

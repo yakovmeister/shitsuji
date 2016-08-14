@@ -107,7 +107,7 @@ class IO
     public function reset()
     {
     	$this->fileName         = null;
-    	$this->fileExtension   = null;
+    	$this->fileExtension    = null;
     	$this->pageInfo         = null;
     	$this->load             = null;
 
@@ -233,7 +233,7 @@ class IO
      */
     public function makeDirectory($dirname)
     {
-        return mkdir($dirname);
+        return @mkdir($dirname);
     }
 
     /**

@@ -85,6 +85,13 @@ class IO
         return $this;
     }
 
+    /**
+     * Simultaneous cURL Request
+     *
+     * @access public 
+     * @param Array $links, Bool $progressFn = false
+     * @return Yakovmeister\Shitsuji\IO
+     */
     public function loadMultipleURL(array $links, $progressFn = false)
     {
         $this->resetMultiple();

@@ -19,6 +19,7 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 * ~~As of now, downloaded videos are named video.mp4. It will overwrite existing video of same name. Fix will be implemented soon.~~
 * ~~480p quality is downloaded but 720p is displayed as default~~
 * ~~Scrapper class not documented.~~
+* ~~some anime title may cause error in creating file and folder~~
 * Hoping someone could help me test this.
 
 ##Future Features##

@@ -38,6 +38,12 @@ class IO
      */
     protected $load;
 
+    protected $multipleHandle;
+
+    protected $multipleLoad;
+
+    protected $fp;
+
     /**
      * Load the URL, create a curl request
      *
@@ -57,12 +63,10 @@ class IO
 
         if($progressFn)
         {
-
-
             ob_start();
             ob_flush();
-            flush();	
-            	
+            flush();    
+                
             $this->fileName      = !empty($filename) ? $filename : $this->pageInfo['filename'];
             $this->fileExtension = $this->pageInfo['extension'];
 
@@ -73,13 +77,78 @@ class IO
         }
 
         $this->load = curl_exec($handle);
-		
+        
         curl_close($handle);
 
         if($progressFn) ob_flush(); flush();
 
         return $this;
-	}
+    }
+
+    public function loadMultipleURL(array $links, $progressFn = false)
+    {
+        $this->resetMultiple();
+
+        $fp = [];
+
+        $itemCount = count($links);
+
+        $handle = curl_multi_init();
+
+        foreach ($links as $key => $value) 
+        {
+            $this->multipleHandle[$key] = curl_init($value['url']);
+
+            $this->pageInfo = pathinfo($value['url']);
+
+            curl_setopt($this->multipleHandle[$key], CURLOPT_RETURNTRANSFER, true);
+
+            if($progressFn)
+            {
+                ob_start();
+                ob_flush();
+                flush();    
+
+                $this->fileName      = !empty($value['file_name']) && !empty($value['download_path']) 
+                                     ? "{$value['download_path']}/{$value['file_name']}" : $this->pageInfo['filename'];
+                $this->fileExtension = $this->pageInfo['extension'];
+
+                $this->n()->console("Downloading: {$this->getFileNameOnly()} ")->n();
+
+                $fp[$key] = fopen($this->getFile(), "w+");
+
+                curl_setopt($this->multipleHandle[$key], CURLOPT_BINARYTRANSFER, true);
+                curl_setopt($this->multipleHandle[$key], CURLOPT_FILE, $fp[$key]);
+                curl_setopt($this->multipleHandle[$key], CURLOPT_PROGRESSFUNCTION, [$this, "progress"]);
+                curl_setopt($this->multipleHandle[$key], CURLOPT_NOPROGRESS, false);
+            }
+
+            curl_multi_add_handle($handle, $this->multipleHandle[$key]);
+
+        }
+
+        do {
+            $this->multipleLoad = curl_multi_exec($handle, $isActive);
+        } while($isActive);
+
+        foreach ($links as $key => $value) 
+        {
+            curl_multi_remove_handle($handle, $this->multipleHandle[$key]);
+            curl_close($this->multipleHandle[$key]);
+            fclose($fp[$key]);
+        }
+
+        curl_multi_close($handle);
+
+        if($progressFn) ob_flush(); flush();
+
+        return die("staph");
+    }
+
+    public function saveFile($clientp, $string)
+    {
+        
+    }
 
     /**
      * curl PROGRESSFUNCTION callback. display download progress
@@ -91,7 +160,7 @@ class IO
     {
         $downloadTotalSize   = convertFileSize($dltotal);
         $downloadedSize      = convertFileSize($dlnow);
-		
+        
         if($dltotal > 0){
             $this->console("Downloading: {$downloadedSize} / {$downloadTotalSize}")->r();
         }
@@ -108,12 +177,24 @@ class IO
      */
     public function reset()
     {
-    	$this->fileName         = null;
-    	$this->fileExtension    = null;
-    	$this->pageInfo         = null;
-    	$this->load             = null;
+        $this->resetFileInfo();
+        $this->load             = null;
 
-    	return $this;
+        return $this;
+    }
+
+    public function resetFileInfo()
+    {
+        $this->fileName         = null;
+        $this->fileExtension    = null;
+        $this->pageInfo         = null;
+    }
+
+    public function resetMultiple()
+    {
+        $this->reset();
+        /// but wait there's more...
+        $this->multipleHandle = null;
     }
 
     /**
@@ -137,9 +218,9 @@ class IO
      */
     public function r()
     {
-    	$this->console("\r");
+        $this->console("\r");
 
-    	return $this;
+        return $this;
     }
 
     /**
@@ -187,11 +268,11 @@ class IO
      *
      * @access public
      */
-    public function makeFile($fileName, $content)
+    public function makeFile($fileName, $content, $writeMode = "w+")
     {
-        $fp = fopen($fileName, "w+");
+        $fp = fopen($fileName, $writeMode);
             fwrite($fp, $content);
-        fclose($fp);	
+        fclose($fp);    
     }
 
     /**
@@ -260,5 +341,25 @@ class IO
     public function directory($dirname)
     {
         return is_dir($dirname);
+    }
+
+    /**
+     * Convert string to a safe file name
+     *
+     * @param String $filename
+     * @return String $filename
+     */
+    public function safe_filename($filename)
+    {
+        $avoid = ["/" => "", "\\" => "", "*" => ".", 
+                  ":" => "", "|" => "", "?" => "", 
+                  "\"" => "", "<" => "[", ">" => "]"];
+
+        foreach ($avoid as $illegalCharacter => $subtitute) 
+        {
+            $filename = str_replace($illegalCharacter, $subtitute, $filename);
+        }
+
+        return $filename;
     }
 }

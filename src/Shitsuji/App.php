@@ -12,7 +12,7 @@ class App
      * @access protected 
      * @var String
      */
-	protected $version = "0.2.8";
+	protected $version = "0.3.2";
 
     /**
      * Handles Http requests and response, and file management 
@@ -116,6 +116,8 @@ class App
      */
     protected $qualitySelection = "720p";
 
+    protected $downloadLink = [];
+
 	/**
  	 * Run you fools. 
  	 *
@@ -123,6 +125,7 @@ class App
  	 */
     public function run()
     {
+
         if($this->argc <= 1) die("Please tell me what to do, my lord. Type {$this->argv[0]} --help\n");
 
         switch ($this->argv[1]) 
@@ -163,51 +166,43 @@ class App
         $this->displayLanguages();
         $this->displayQuality();
 
-        $this->checkEpisodeCountAndDownload();
+        $this->downloadAnime();
 
     }
 
-    /**
-     * Check if user wants to do a batch download
-     * or just download a single file.
-     *
-     * @access public
-     * @return Yakovmeister\Shitsuji\App
-     */
-    public function checkEpisodeCountAndDownload()
-    {
-
-    	if(!$this->io->directory($this->animeDetail["title"])) $this->io->makeDirectory($this->animeDetail["title"]);
-
-    	$this->io->makeFile("{$this->animeDetail["title"]}/anime.json", json_encode($this->animeDetail));
-
-    	/// Triggers our batch download if the episode selection is
-    	///  greater than total anime count.
-
-    	if($this->episodeSelection >= $this->animeDetail["total-episodes"])
-    	{
-    	    $this->batchDownloadAnime();
-    	}
-
-        $this->searchVideoLinkAndCache();
-        $this->fetchVideo();
-
-        die();
-    }
-   
     /**
      * Let us download all episodes in one go
      *
      * @access public
      * @return Yakovmeister\Shitsuji\App
      */
-    public function batchDownloadAnime()
+    public function downloadAnime()
     {
-        for ($episode=1; $episode <= $this->animeDetail["total-episodes"]; $episode++) 
-    	{ 
-            $this->searchVideoLinkAndCache($episode);
+    	$this->io->console("I'm getting the links for you my lord, please wait and chill")->n();
+
+        if($this->episodeSelection >= $this->animeDetail["total-episodes"])
+        {
+
+            for ($episode=1; $episode <= $this->animeDetail["total-episodes"]; $episode++) 
+    	    { 
+                $this->searchVideoLinkAndCache($episode);
+                $this->fetchVideo();
+
+                $extractLinkProgress = round($episode/$this->animeDetail["total-episodes"] * 100);
+                $this->io->console("Fetching link: {$extractLinkProgress}%")->r();
+            }	
+        }
+        else
+        {
+            $this->searchVideoLinkAndCache();
             $this->fetchVideo();
         }
+
+    	if(!$this->io->directory($this->animeDetail["title"])) $this->io->makeDirectory($this->animeDetail["title"]);
+
+    	$this->io->makeFile("{$this->animeDetail["title"]}/anime.json", json_encode($this->animeDetail));
+
+        $this->commenceDownload();
 
     	die();
     }
@@ -284,16 +279,30 @@ class App
             // let's stick to mp4upload for the mean time
             if(strrpos($video, 'mp4upload'))
             {
-                $downloadLink = $this->extractMp4UploadLink($video);
-           
-                $this->io->loadURL($downloadLink, true, 
-                    "{$this->animeDetail["title"]}/{$this->animeDetail["title"]}-episode-{$this->episodeSelection}")->store();
+                array_push($this->downloadLink, [
+                        "download_path" => "{$this->animeDetail["title"]}",
+                        "file_name" => "{$this->animeDetail["title"]}-episode-{$this->episodeSelection}",
+                        "url"  => $this->extractMp4UploadLink($video)
+                	]);
 
                 break ;
             }
         }
 
         return $this;
+    }
+
+    /**
+     * Start Batch Download
+     *
+     * @access public
+     * @return Yakovmeister\Shitsuji\App
+     */
+    public function commenceDownload()
+    {
+    	$this->io->loadMultipleURL($this->downloadLink, true);
+
+    	return $this;
     }
 
     /**
@@ -374,7 +383,7 @@ class App
                 else die("That's not a valid number my lord. Gomen.");	
             }
 
-            $this->animeDetail["title"] = $this->scrapeTitleList()[$this->animeSelection];
+            $this->animeDetail["title"] = $this->io->safe_filename($this->scrapeTitleList()[$this->animeSelection]);
         }
         else 
         {

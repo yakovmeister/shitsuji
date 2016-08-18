@@ -86,6 +86,71 @@ class IO
     }
 
     /**
+     * Download files from server
+     *
+     * @access public 
+     * @param Array $links, Bool $progressFn = false
+     * @return Yakovmeister\Shitsuji\IO
+     */
+    public function downloadFiles($urls)
+    { 
+
+        $ctx = stream_context_create();
+
+        stream_context_set_params($ctx, ["notification" => [$this, "downloadCallback"]]);
+
+        foreach ($urls as $key => $value) 
+        {
+
+            $this->pageInfo = pathinfo($value["url"]);
+            $this->fileName      = !empty($value['file_name']) && !empty($value['download_path']) 
+                                     ? "{$value['download_path']}/{$value['file_name']}" : $this->pageInfo['filename'];
+            $this->fileExtension = $this->pageInfo['extension'];
+            
+            // set name every shits
+            $content = file_get_contents($value["url"], false, $ctx);
+
+            // done downloading? save the fuck up
+            $this->store($this->getFile(), $content);
+        }
+
+        return $this;
+    }
+
+    public function downloadCallback($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max)
+    {
+        switch($notification_code) {
+            case STREAM_NOTIFY_RESOLVE:
+            case STREAM_NOTIFY_AUTH_REQUIRED:
+            case STREAM_NOTIFY_COMPLETED:
+            case STREAM_NOTIFY_FAILURE:
+            case STREAM_NOTIFY_AUTH_RESULT:
+ //               var_dump($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max);
+                /* Ignore */
+                break;
+
+            case STREAM_NOTIFY_REDIRECTED:
+                echo "Being redirected to: ", $message;
+               break;
+
+            case STREAM_NOTIFY_CONNECT:
+   
+               echo "\n\nDownloading {$this->getFileNameOnly()}\n";
+               break;
+
+            case STREAM_NOTIFY_FILE_SIZE_IS:
+                echo "File Size: ", convertFileSize($bytes_max);
+                echo "\n";
+                break;
+
+            case STREAM_NOTIFY_PROGRESS:
+                echo "Downloading ",convertFileSize($bytes_transferred), " / ", convertFileSize($bytes_max);
+                echo "\r";
+                break;
+        }
+    }
+
+    /**
      * Simultaneous cURL Request
      *
      * @access public 
@@ -150,11 +215,6 @@ class IO
         if($progressFn) ob_flush(); flush();
 
         return die("staph");
-    }
-
-    public function saveFile($clientp, $string)
-    {
-        
     }
 
     /**

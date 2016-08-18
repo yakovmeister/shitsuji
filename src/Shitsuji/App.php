@@ -12,7 +12,7 @@ class App
      * @access protected 
      * @var String
      */
-	protected $version = "0.3.2";
+	protected $version = "0.4.0";
 
     /**
      * Handles Http requests and response, and file management 
@@ -300,7 +300,7 @@ class App
      */
     public function commenceDownload()
     {
-    	$this->io->loadMultipleURL($this->downloadLink, true);
+    	$this->io->downloadFiles($this->downloadLink);
 
     	return $this;
     }

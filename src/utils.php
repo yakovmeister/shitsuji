@@ -12,10 +12,10 @@ if(!function_exists("convertFileSize"))
     {
         switch ($int) {
             case $int > 0 && $int < 1073741825:
-                $int = round((($int / 1024) / 1024), 2);
+                $int = round((($int / 1024) / 1024), 1);
                 return "{$int} MB";
             case $int > 1073731824:
-                $int = round(((($int / 1024) / 1024) / 1024), 2);
+                $int = round(((($int / 1024) / 1024) / 1024), 1);
                 return "{$int} GB";
             default:
                 return $int;

@@ -31,58 +31,49 @@ class IO
     protected $pageInfo;
 
     /**
-     * Page or File you're trying to load.
+     * Download path, where files are saved
      *
      * @access protected
-     * @var curl $load
+     * @var String $fileDownloadPath
      */
-    protected $load;
-
-    protected $multipleHandle;
-
-    protected $multipleLoad;
-
-    protected $fp;
+    protected $fileDownloadPath;
 
     /**
-     * Load the URL, create a curl request
+     * Download the file 
      *
-     * @access public 
-     * @param String $url, Bool $progressFn = false, String $filename = null
-     * @return Yakovmeister\Shitsuji\IO
+     * @access public
+     * @param mixed $url, bool $isFile = false, bool $useIncludePath = false
+     * @return file
      */
-    public function loadURL($url, $progressFn = false, $filename = null)
+    public function download($url, $isFile = false, $useIncludePath = false)
     {
-        $this->reset();
-
-        $this->pageInfo = pathinfo($url);
-        
-        $handle         = curl_init($url);
-
-        curl_setopt($handle, CURLOPT_RETURNTRANSFER, true);
-
-        if($progressFn)
+        /// reverse toilet. we flush before we take a shit lulz 
+        $this->flush();
+        $ctx = null;
+        /// assumes that the url given has our data 
+        /// format, if it's an array, sets our file variable
+        if(is_array($url))
         {
-            ob_start();
-            ob_flush();
-            flush();    
-                
-            $this->fileName      = !empty($filename) ? $filename : $this->pageInfo['filename'];
-            $this->fileExtension = $this->pageInfo['extension'];
 
-            $this->n()->console("Downloading: {$this->getFileNameOnly()} ")->n();
+            $this->fileInfo = pathinfo($url["url"]);
 
-            curl_setopt($handle, CURLOPT_PROGRESSFUNCTION, [$this, "progress"]);
-            curl_setopt($handle, CURLOPT_NOPROGRESS, false);
+            $this->fileName = !empty($url["file_name"]) ? $url["file_name"] : $this->fileInfo["filename"];
+
+            $this->fileExtension = $this->fileInfo["extension"];  
+
+            $this->fileDownloadPath = $url["download_path"];
+
+            $url = $url["url"];
+        }
+        
+        if($isFile)
+        {
+            $ctx = stream_context_create();
+
+            stream_context_set_params($ctx, ["notification" => [$this, "downloadCallback"]]);   
         }
 
-        $this->load = curl_exec($handle);
-        
-        curl_close($handle);
-
-        if($progressFn) ob_flush(); flush();
-
-        return $this;
+        return file_get_contents($url, $useIncludePath, $ctx);
     }
 
     /**
@@ -95,23 +86,12 @@ class IO
     public function downloadFiles($urls)
     { 
 
-        $ctx = stream_context_create();
-
-        stream_context_set_params($ctx, ["notification" => [$this, "downloadCallback"]]);
-
         foreach ($urls as $key => $value) 
         {
-
-            $this->pageInfo = pathinfo($value["url"]);
-            $this->fileName      = !empty($value['file_name']) && !empty($value['download_path']) 
-                                     ? "{$value['download_path']}/{$value['file_name']}" : $this->pageInfo['filename'];
-            $this->fileExtension = $this->pageInfo['extension'];
-            
-            // set name every shits
-            $content = file_get_contents($value["url"], false, $ctx);
+            $file = $this->download($value, true);
 
             // done downloading? save the fuck up
-            $this->store($this->getFile(), $content);
+            $this->makeFile($this->getFile(), $file);
         }
 
         return $this;
@@ -144,124 +124,25 @@ class IO
                 break;
 
             case STREAM_NOTIFY_PROGRESS:
-                echo "Downloading ",convertFileSize($bytes_transferred), " / ", convertFileSize($bytes_max);
-                echo "\r";
+                echo "\r                                                       ";
+                echo "\rDownloading ",convertFileSize($bytes_transferred), " / ", convertFileSize($bytes_max);
                 break;
         }
     }
 
     /**
-     * Simultaneous cURL Request
-     *
-     * @access public 
-     * @param Array $links, Bool $progressFn = false
-     * @return Yakovmeister\Shitsuji\IO
-     */
-    public function loadMultipleURL(array $links, $progressFn = false)
-    {
-        $this->resetMultiple();
-
-        $fp = [];
-
-        $itemCount = count($links);
-
-        $handle = curl_multi_init();
-
-        foreach ($links as $key => $value) 
-        {
-            $this->multipleHandle[$key] = curl_init($value['url']);
-
-            $this->pageInfo = pathinfo($value['url']);
-
-            curl_setopt($this->multipleHandle[$key], CURLOPT_RETURNTRANSFER, true);
-
-            if($progressFn)
-            {
-                ob_start();
-                ob_flush();
-                flush();    
-
-                $this->fileName      = !empty($value['file_name']) && !empty($value['download_path']) 
-                                     ? "{$value['download_path']}/{$value['file_name']}" : $this->pageInfo['filename'];
-                $this->fileExtension = $this->pageInfo['extension'];
-
-                $this->n()->console("Downloading: {$this->getFileNameOnly()} ")->n();
-
-                $fp[$key] = fopen($this->getFile(), "w+");
-
-                curl_setopt($this->multipleHandle[$key], CURLOPT_BINARYTRANSFER, true);
-                curl_setopt($this->multipleHandle[$key], CURLOPT_FILE, $fp[$key]);
-                curl_setopt($this->multipleHandle[$key], CURLOPT_PROGRESSFUNCTION, [$this, "progress"]);
-                curl_setopt($this->multipleHandle[$key], CURLOPT_NOPROGRESS, false);
-            }
-
-            curl_multi_add_handle($handle, $this->multipleHandle[$key]);
-
-        }
-
-        do {
-            $this->multipleLoad = curl_multi_exec($handle, $isActive);
-        } while($isActive);
-
-        foreach ($links as $key => $value) 
-        {
-            curl_multi_remove_handle($handle, $this->multipleHandle[$key]);
-            curl_close($this->multipleHandle[$key]);
-            fclose($fp[$key]);
-        }
-
-        curl_multi_close($handle);
-
-        if($progressFn) ob_flush(); flush();
-
-        return die("staph");
-    }
-
-    /**
-     * curl PROGRESSFUNCTION callback. display download progress
-     *
-     * @access public
-     * @param $clientp, Double $dlnow, Double $dlnow, Double $ultotal, Double $ulnow
-     */
-    public function progress($clientp, $dltotal, $dlnow, $ultotal, $ulnow)
-    {
-        $downloadTotalSize   = convertFileSize($dltotal);
-        $downloadedSize      = convertFileSize($dlnow);
-        
-        if($dltotal > 0){
-            $this->console("Downloading: {$downloadedSize} / {$downloadTotalSize}")->r();
-        }
-
-        ob_flush();
-        flush();
-    }
-
-    /**
-     * Reset everything. Some says it good to have a fresh start
+     * reset variables, some says it's good to have a fresh start
      *
      * @access public
      * @return Yakovmeister\Shitsuji\IO
      */
-    public function reset()
+    public function flush()
     {
-        $this->resetFileInfo();
-        $this->load             = null;
+        $this->fileName = null;
+        $this->fileExtension = null;
+        $this->fileInfo = null;
 
         return $this;
-    }
-
-    public function resetFileInfo()
-    {
-        $this->fileName         = null;
-        $this->fileExtension    = null;
-        $this->pageInfo         = null;
-    }
-
-    public function resetMultiple()
-    {
-        $this->reset();
-        /// but wait there's more...
-        $this->multipleHandle = null;
     }
 
     /**
@@ -318,16 +199,6 @@ class IO
         $stream = fopen ("php://stdin","r");
 
         return trim(fgets($stream));
-    }
-
-    /**
-     * Save/Write downloaded file. duh.
-     *
-     * @access public
-     */
-    public function store()
-    {
-        $this->makeFile($this->getFile(), $this->getLoad());
     }
 
     /**

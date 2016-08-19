@@ -259,7 +259,7 @@ class App
      */
     public function extractMp4UploadLink($mp4uploadHTML)
     {
-        $document = $this->io->loadURL($mp4uploadHTML)->getLoad();
+        $document = $this->io->download($mp4uploadHTML);
 
         preg_match("/http:\/\/(.*?)video.mp4/", $document, $match);
 
@@ -571,7 +571,7 @@ class App
      */
     public function searchTitleAndCache()
     {
-        $this->titleCache = $this->io->loadURL($this->appendSearch())->getLoad();
+        $this->titleCache = $this->io->download($this->appendSearch());
 
         return $this;
     }
@@ -585,7 +585,7 @@ class App
      */
     public function searchVideoLinkAndCache($link = null)
     {   
-        $this->videoLinkCache = $this->io->loadURL($this->appendToBase($this->generateWatchLink($link)))->getLoad();
+        $this->videoLinkCache = $this->io->download($this->appendToBase($this->generateWatchLink($link)));
 
         return $this;
     }
@@ -598,7 +598,7 @@ class App
      */
     public function searchEpisodeAndCache()
     {
-        $this->episodeCache = $this->io->loadURL($this->appendToBase($this->scrapeLinkList()[$this->animeSelection]))->getLoad();
+        $this->episodeCache = $this->io->download($this->appendToBase($this->scrapeLinkList()[$this->animeSelection]));
 
         return $this;
     }

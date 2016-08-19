@@ -274,7 +274,7 @@ class App
      */
     public function fetchVideo()
     {
-        foreach ($this->scrapeVideoLinks() as $video) 
+        foreach ($this->scrapeVideoLinks() as $key => $video) 
         {	
             // let's stick to mp4upload for the mean time
             if(strrpos($video, 'mp4upload'))
@@ -287,6 +287,7 @@ class App
 
                 break ;
             }
+
         }
 
         return $this;
@@ -384,6 +385,7 @@ class App
             }
 
             $this->animeDetail["title"] = $this->io->safe_filename($this->scrapeTitleList()[$this->animeSelection]);
+            $this->animeDetail["episodes"] = [];
         }
         else 
         {

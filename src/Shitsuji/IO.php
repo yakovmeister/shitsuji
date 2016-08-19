@@ -99,27 +99,14 @@ class IO
 
     public function downloadCallback($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max)
     {
-        switch($notification_code) {
-            case STREAM_NOTIFY_RESOLVE:
-            case STREAM_NOTIFY_AUTH_REQUIRED:
-            case STREAM_NOTIFY_COMPLETED:
-            case STREAM_NOTIFY_FAILURE:
-            case STREAM_NOTIFY_AUTH_RESULT:
- //               var_dump($notification_code, $severity, $message, $message_code, $bytes_transferred, $bytes_max);
-                /* Ignore */
-                break;
-
-            case STREAM_NOTIFY_REDIRECTED:
-                echo "Being redirected to: ", $message;
-               break;
-
+        switch($notification_code) 
+        {
             case STREAM_NOTIFY_CONNECT:
-   
                echo "\n\nDownloading {$this->getFileNameOnly()}\n";
                break;
 
             case STREAM_NOTIFY_FILE_SIZE_IS:
-                echo "File Size: ", convertFileSize($bytes_max);
+                echo "Size: ", convertFileSize($bytes_max);
                 echo "\n";
                 break;
 
@@ -300,4 +287,29 @@ class IO
 
         return $filename;
     }
+
+    /**
+     * Check file hash
+     *
+     * @access public
+     * @param String $file1, String $file2
+     * @return Bool
+     */
+    public function checkHash($file1, $file2)
+    {
+        return $this->makeHash($file1) == $this->makeHash($file2);
+    }
+
+    /**
+     * Create hash for file
+     *
+     * @access public
+     * @param String $file
+     * @return String md5hashed
+     */
+    public function makeHash($file)
+    {
+        return md5_file($file);
+    }
+
 }

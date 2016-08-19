@@ -20,7 +20,7 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 * ~~480p quality is downloaded but 720p is displayed as default~~
 * ~~Scrapper class not documented.~~
 * ~~some anime title may cause error in creating file and folder~~
-* Hoping someone could help me test this.
+* ~~Hoping someone could help me test this.~~
 
 ##Future Features##
 * Allow Download Resume

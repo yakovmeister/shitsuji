@@ -243,7 +243,7 @@ class IO
      */
     public function getFile()
     {
-        return "{$this->get("fileName")}.{$this->get("fileExtension")}";
+        return "{$this->get("fileDownloadPath")}/{$this->get("fileName")}.{$this->get("fileExtension")}";
     }
 
     /**

@@ -121,7 +121,7 @@ class IO
      */
     public function makeHash($file)
     {
-        return md5_file($file);
+        return @md5_file($file);
     }
 
     public static function getInstance()

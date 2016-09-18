@@ -139,7 +139,7 @@ trait AnimeTrait
 	 * @param Mixed $value
 	 * @return Yakovmeister\Weebo\Manager\Anime\RAWRTrait 
 	 */
-	public function setEpisodesPreference($value = 1)
+	public function setEpisodesPreference($value)
 	{
 		$episodesCount = count($this->getEpisodes());
 
@@ -147,21 +147,22 @@ trait AnimeTrait
 
 		switch ($value) {
 			case "*":
-				for ($index=1; $index <= $episodesCount; $index++) { 
-					array_push($this->episodesPreference, $index-1);
+				for ($index=1; $index <= $episodesCount; $index++) { 	
+					$value = $index - 1;			
+					array_push($this->episodesPreference, $value);
 				}
 				break;
 			case is_array($value):
 				foreach($value as $episode) {
-					$this->setEpisodesPreference($episode--);
+					$this->setEpisodesPreference($episode);
 				}
 				break;
 			case is_integer($value):
-				array_push($this->episodesPreference, $value--);
+				array_push($this->episodesPreference, $value -= 1);
 				break;
 			case is_string($value):
-				foreach(separateList($value) as $episode) {
-					$this->setEpisodesPreference($episode--);
+				foreach(separateList($value) as $index) {
+					array_push($this->episodesPreference, $index -= 1);
 				}
 				break;
 			default:

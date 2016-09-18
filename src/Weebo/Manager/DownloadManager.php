@@ -15,6 +15,8 @@ class DownloadManager
 
 	protected $response;
 
+	protected $metadata = [];
+
 	public function __construct(Net $net, IO $io)
 	{
 		$this->net = $net;
@@ -29,22 +31,23 @@ class DownloadManager
 	 */
 	public function fetchFile(array $metadata)
 	{
-		$this->set("name", $metadata["name"])
-			 ->set("mirrors", $metadata["mirrors"])
-			 ->set("downloadPath", $metadata["path"]);
+		$this->metadata = $metadata;
+
+		$this->set("name", $this->metadata["name"])
+			 ->set("mirrors", $this->metadata["mirrors"])
+			 ->set("downloadPath", $this->metadata["path"]);
 
 		if(!$this->hasMirrors()) {
 			$this->io->write("Too bad, {$this->getName()} may not available with your video preference or it's not been released yet.")->newLn();
 			return $this;
 		}
 
-		$this->set("extension", pathinfo($metadata["mirrors"][$this->getCurrentMirrorIndex()])["extension"]);
+		$this->set("extension", @pathinfo($this->metadata["mirrors"][$this->getCurrentMirrorIndex()])["extension"]);
 
-		// it seems that hash from source may differ as always
-		if(!$this->io->hashMismatched($this->getDownloadPathWithName(), $this->getCurrentMirror())) 
+		if(file_exists($this->getDownloadPathWithName())) 
 		{
 			$this->io->newLn()->newLn();
-			$this->io->write("Hash Matched for: {$this->getName()}, skipping file")->newLn()->newLn(); 
+			$this->io->write("Skipping {$this->getName()}. File Found")->newLn()->newLn(); 
 		}
 		else
 		{
@@ -52,7 +55,7 @@ class DownloadManager
 
 			if(($loaded->getResponseStatus() == Net::HTTP_NOT_FOUND) && ($this->getCurrentMirrorIndex() < count($this->getMirrors()))) {
 				$this->set("mirrorIndex", $this->getCurrentMirrorIndex() + 1);
-				return $this->fetchFile($metadata);
+				return $this->fetchFile($this->metadata);
 			}
 
 			$this->response = $loaded;			
@@ -74,6 +77,14 @@ class DownloadManager
 			$this->io->makeDirectory($this->getDownloadPath());
 
 		$this->io->makeFile($this->getDownloadPathWithName(), $this->response->getResponse());
+
+		if($this->io->hashMismatched($this->getDownloadPathWithName(), $this->getCurrentMirror())) 
+		{
+			$this->io->retLn()->write("Failed to download: {$this->getName()}, redownloading using mirror")->newLn()->newLn();	
+			$this->set("mirrorIndex", $this->getCurrentMirrorIndex() + 1);
+			
+			return $this->fetchFile($this->metadata);
+		}
 
 		$this->io->retLn()->write("Downloading {$this->getName()} Finished!")->newLn()->newLn();
 	}

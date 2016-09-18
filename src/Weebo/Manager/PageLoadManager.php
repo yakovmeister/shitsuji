@@ -3,12 +3,15 @@
 namespace Yakovmeister\Weebo\Manager;
 
 use Yakovmeister\Weebo\Component\Net;
+use Yakovmeister\Weebo\Application;
 
 class PageLoadManager
 {
 	protected $net;
 
 	protected $page;
+
+	protected static $instance;
 
 	public function __construct(Net $net)
 	{
@@ -53,5 +56,12 @@ class PageLoadManager
 	public function getContent()
 	{
 		return $this->page["message"];
+	}
+
+	public static function getInstance()
+	{
+		return is_null(static::$instance)
+		? Application::getInstance()->make(PageLoadManager::class)
+		: static::$instance;
 	}
 }

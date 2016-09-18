@@ -96,8 +96,8 @@ class RAWRAnimeManager implements AnimeInterface
 		for ($index = 0; $index < count($episodeTitle); $index++) 
 		{ 
 			$this->setEpisodes([
-				"episode" => $episodeTitle[$index],
-				"link"    => $this->episode($this->extractAnimeID(), ($index + 1), $this->getLanguagePreference(), $this->getQualityPreference())
+				"episode"   => "{$this->anime[$this->getAnimePreference()]["title"]} episode {$episodeTitle[$index]}",
+				"episode-number"  => $episodeTitle[$index]
 			]);
 		}
 
@@ -122,12 +122,19 @@ class RAWRAnimeManager implements AnimeInterface
 	 */
 	public function makeDirectLinks()
 	{
-		foreach($this->getEpisodes() as $key => $episode)
+		foreach($this->getEpisodesPreference() as $key => $episode)
 		{
 			$episodeNo = $key + 1;
 			$links = [];
 
-			$this->loaded["download"][$key] = $this->page->load($episode["link"]);
+			$this->loaded["download"][$key] = $this->page->load(
+				 $this->episode(
+				 	$this->extractAnimeID(), 
+				 	$episodeNo, 
+				 	$this->getLanguagePreference(), 
+				 	$this->getQualityPreference()
+				 )
+			);
 
 			if($this->loaded["download"][$key]["status"] == 404) return ;
 
@@ -145,11 +152,11 @@ class RAWRAnimeManager implements AnimeInterface
 			$this->setDirectVideoMirrors([
 				"folder"  => "{$this->getAnime()[$this->getAnimePreference()]["title"]}",
 				"file"    => "{$this->getAnime()[$this->getAnimePreference()]["title"]}-episode-{$episodeNo}",
-				"mirrors" => $links
+				"mirrors" => mp4uploadLinkMultiple($links)
 			]);
 
 
-            $extractLinkProgress = round($key / count($this->getEpisodes()) * 100);
+            $extractLinkProgress = round($key / count($this->getEpisodesPreference()) * 100);
             IO::getInstance()->write("Compiling: {$extractLinkProgress}%")->retLn();
 		}
 
@@ -202,17 +209,10 @@ class RAWRAnimeManager implements AnimeInterface
 	{
 		foreach ($this->getEpisodesPreference() as $key => $value) 
 		{
-			$mp4mirror = [];
-
-			foreach ($this->getDirectVideoMirrors()[$value]["mirrors"] as $key2 => $value2) 
-			{
-				array_push($mp4mirror, getmp4uploadLink($this->page->load($value2)["message"]));
-			}
-
 			$this->downloadManager->fetchFile([
 				"path" 			=> $this->getDirectVideoMirrors()[$value]["folder"],
 				"name"   		=> $this->getDirectVideoMirrors()[$value]["file"],
-				"mirrors" 		=> $mp4mirror
+				"mirrors" 		=> $this->getDirectVideoMirrors()[$value]["mirrors"]
 			])->save();
 		}
 		

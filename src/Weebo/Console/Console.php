@@ -132,12 +132,6 @@ class Console
 			//  "5,6,10" -> which will download episode 5,6 and 10 only
 			//--------------------------------------------------------------------------------------
 			$this->animeManager->captureEpisodes();
-
-			$this->io->write("Compiling Episodes and Mirrors... This may take a minute. Please Wait.")->newLn();
-			
-			$this->animeManager->makeDirectLinks();
-			
-			$this->io->write("Episodes and Mirrors Compiled!");
 			
 			$episodeCount = count($this->animeManager->getEpisodes());
 			
@@ -156,6 +150,13 @@ class Console
 			}
 			
 			$this->animeManager->selectEpisodes($episodeSelection);
+
+			$this->io->write("Compiling Episodes and Mirrors... This may take a minute. Please Wait.")->newLn();
+			
+			$this->animeManager->makeDirectLinks();
+			
+			$this->io->write("Episodes and Mirrors Compiled!");
+
 			//---------------------------------------------------------------------------------------
 			// Start downloading after gathering all the information needed
 			//---------------------------------------------------------------------------------------

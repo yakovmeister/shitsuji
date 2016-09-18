@@ -1,6 +1,8 @@
 <?php
 
+use Yakovmeister\Weebo\Manager\PageLoadManager as Page;
 use Yakovmeister\Weebo\Exception\ExceedingFileSizeException;
+use Yakovmeister\Weebo\Exception\IllegalRangeFormatException;
 
 /**
  * turn bytes to Megabytes or even Gigabytes.
@@ -77,26 +79,22 @@ if(!function_exists("separateList"))
         $num = [];
 
         switch ($data) {
+
             case strpos($data, "-") > 0:
+            
                 $data = explode("-", $data);
-                for ($index = $data[0]; $index < $data[1]; $index++) {
+
+                if(count($data) > 2) throw new IllegalRangeFormatException;
+
+                for ($index = $data[0]; $index <= $data[1]; $index++) {
                     array_push($num, $index);
                 }
 
                 break;
             case strpos($data, ",") > 0:
                 $data = explode(",", $data);
-                foreach ($data as $value) {
-                    array_push($num, $value);
-                }
-                break;
-            default:
-                $int = (int) $data;
-                for($index = 1; $index <= $int; $index++)
-                {
-                    array_push($num, $index);
-                }
-                break;
+
+                return $data;
         }
 
         return $num;
@@ -117,6 +115,20 @@ if(!function_exists("getmp4uploadLink"))
         preg_match("/http:\/\/(.*?)video.mp4/", $html, $match);
 
         return $match[0];
+    }
+}
+
+if(!function_exists("mp4uploadLinkMultiple"))
+{
+    function mp4uploadLinkMultiple(array $mp4uploadLinks)
+    {
+        $returnLink = [];
+        foreach($mp4uploadLinks as $link)
+        {
+            array_push($returnLink, getmp4uploadLink(Page::getInstance()->load($link)["message"]));
+        }
+
+        return $returnLink;
     }
 }
 

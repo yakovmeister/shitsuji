@@ -36,7 +36,7 @@ class PageLoadManager
 			case Net::HTTP_FOUND:
 				$this->page = [
 					"status" => Net::HTTP_OK,
-					"message" => $page->getResponse()
+					"message" => normalizeHTML($page->getResponse())
 				];
 	
 				break;

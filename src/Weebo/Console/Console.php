@@ -98,6 +98,7 @@ class Console
 	{
 		$this->io->newLn()->newLn()->write("Searching {$keyword}...")->newLn();
 		$this->animeManager->searchAnime($keyword, $this->getQuality(), $this->getLanguage());
+
 		$searchResultCount = count($this->animeManager->getAnime());
 
 		if($searchResultCount > 0) 
@@ -107,15 +108,16 @@ class Console
 			// simply providing an input number of the anime the users wants to download
 			//--------------------------------------------------------------------------------------
 			$this->io->write("{$searchResultCount} result/s found for {$keyword}")->newLn()->newLn();
-			
+
 			$this->display($this->animeManager->getAnime(), "title");
 
 			$this->io->newLn();
 			
 			$animeSelection = $this->io->read("Type the number of the anime you want to download: ");
 
-			if($animeSelection < 0 || $animeSelection > $searchResultCount) 
-				$this->io->write("Invalid Anime Selection. Exiting..."); $this->init = false;
+			if($animeSelection > $searchResultCount || empty($animeSelection)) {
+				$this->io->write("Invalid Selection, Exiting...")->newLn(); return $this->init = false;
+			}
 			
 			$this->animeManager->selectAnime($animeSelection);
 			//--------------------------------------------------------------------------------------
@@ -149,8 +151,8 @@ class Console
 			
 			$episodeSelection = $this->io->read("Type the episode number you want to download: ");
 			
-		///	if($episodeSelection < 0 || $episodeSelection > $episodeCount) 
-		///		$this->io->write("Invalid Episode Selection"); $this->init = false;
+			if(empty($episodeSelection) || $episodeSelection > $episodeCount) 
+				$this->io->write("Invalid Selection, Exiting...")->newLn(); return $this->init = false;
 			
 			$this->animeManager->selectEpisodes($episodeSelection);
 			//---------------------------------------------------------------------------------------
@@ -160,6 +162,9 @@ class Console
 
 			
 		}
+
+		// reinstantiate anime source object
+		return $this->setAnimeSource();
 	}
 
 	public function display($dataToDisplay, $arrayParam = null)

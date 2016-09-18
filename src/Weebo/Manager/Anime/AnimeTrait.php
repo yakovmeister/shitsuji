@@ -161,7 +161,7 @@ trait AnimeTrait
 				break;
 			case is_string($value):
 				foreach(separateList($value) as $episode) {
-					$this->setEpisodesPreference($episode);
+					$this->setEpisodesPreference($episode--);
 				}
 				break;
 			default:

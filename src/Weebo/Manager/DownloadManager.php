@@ -31,11 +31,16 @@ class DownloadManager
 	{
 		$this->set("name", $metadata["name"])
 			 ->set("mirrors", $metadata["mirrors"])
-			 ->set("downloadPath", $metadata["path"])
-			 ->set("extension", pathinfo($metadata["mirrors"][$this->getCurrentMirrorIndex()])["extension"]);
+			 ->set("downloadPath", $metadata["path"]);
 
-		if(!$this->hasMirrors()) return $this->io->write("Too bad, this anime may not available with your video preference or it's not been released yet.");
+		if(!$this->hasMirrors()) {
+			$this->io->write("Too bad, {$this->getName()} may not available with your video preference or it's not been released yet.")->newLn();
+			return $this;
+		}
 
+		$this->set("extension", pathinfo($metadata["mirrors"][$this->getCurrentMirrorIndex()])["extension"]);
+
+		// it seems that hash from source may differ as always
 		if(!$this->io->hashMismatched($this->getDownloadPathWithName(), $this->getCurrentMirror())) 
 		{
 			$this->io->newLn()->newLn();

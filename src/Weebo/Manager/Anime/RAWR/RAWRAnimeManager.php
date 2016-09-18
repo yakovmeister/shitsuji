@@ -47,7 +47,6 @@ class RAWRAnimeManager implements AnimeInterface
 	 */
 	public function searchAnime($animeTitle, $quality = "720p", $language = "subbed")
 	{
-
 		$this->setQualityPreference($this->selectQuality($quality));
 
 		$this->setLanguagePreference($this->selectLanguage($language));

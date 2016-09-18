@@ -1,0 +1,17 @@
+{
+    "name": "yakovmeister/weebo",
+    "type": "project",
+    "version": "0.1.0",
+    "require": {
+        "illuminate/container": "5.*"
+    },
+    "autoload" : {
+        "psr-4": {
+            "Yakovmeister\\" : "src/"            
+        },
+        "files": [
+            "src/utils.php"
+        ]
+    },
+    "minimum-stability": "beta"
+}

@@ -1,0 +1,5 @@
+/tests/DirectoryCreationTest/*
+/tests/FileCreationTest/*
+/PharBuilder/Builds/*
+/vendor
+/composer.lock

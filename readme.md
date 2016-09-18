@@ -1,18 +1,32 @@
+# Shitsuji #
+---
+Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface (CLI) based Anime Downloader.
 
-* anime => array that contains link and title of all available anime that matched the criteria
-* animePreference => integer (value - 1) index of the anime you want to download
-* episodes => array that contains episode number and links of the selected anime
-* episodePreference => integer (value - 1) | string | array contains the index of the episode of the anime you want to download
-* qualityPreference => string quality of the video
-* languagePreference => language of the video (subbed or dubbed or raw)
-* videoLinks => array direct mirrors of the video.
+##Requirements##
+* PHP 7 or higher
+* Terminal or Command Prompt
+* php_curl extension
 
+##Basic Usage##
+* run ```php shitsuji.phar```
+* type the desired anime you want to download
+* you can also select quality by typing ```quality:[quality]```
+* example: ```quality:720p``` will download video with 720p quality
+* you can also select language preference by typing ```language:[language]```
+* example ```language:raw``` will download the raw version of anime if available
+* typing ```console:exit``` will quit the cli
 
+##Features##
+* interactive CLI
+* Anime episode as index
+* Batch Anime Downloading
+* Custom Episode Selections example (1-5 - to download 1 to 5), (1,5 - download only 1 and 5)
+* File checking (skip downloading file if it exists) [pending]
 
-searchAnime($searchKey) => search and cache anime with link
-selectAnime($index) => select anime preference
-selectQuality($quality = "720p") select anime quality
-selectLanguage($language = "subbed") select anime language
-selectEpisodes($episodes = 1) select episode preference
-captureEpisode() => fetch and cache episodes with link
+##Future Features##
+* Allow Download Resume
+* Allow download from different mirror (for now, shitsuji can only download from mp4upload)
+* ~~Mirror Download Selection~~
+* Anything I might find cool
+* Multiple Source (hentaihaven and rawr)
 

@@ -151,8 +151,9 @@ class Console
 			
 			$episodeSelection = $this->io->read("Type the episode number you want to download: ");
 			
-			if(empty($episodeSelection) || $episodeSelection > $episodeCount) 
+			if(empty($episodeSelection) || $episodeSelection > $episodeCount) {
 				$this->io->write("Invalid Selection, Exiting...")->newLn(); return $this->init = false;
+			}
 			
 			$this->animeManager->selectEpisodes($episodeSelection);
 			//---------------------------------------------------------------------------------------

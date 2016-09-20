@@ -69,7 +69,7 @@ class Net
 
 		$this->setResponse(@file_get_contents($url, false, $ctx));		
 
-		$this->setHeader($http_response_header);
+		$this->setHeader(@$http_response_header);
 
 		$this->setStatus((int)substr($this->getResponseHeader(0), 9, 3));
 
@@ -93,7 +93,7 @@ class Net
 	 * @param Array $header
 	 * @return Yakovmeister\Weebo\Component\Net
 	 */
-	public function setHeader($header)
+	public function setHeader($header = null)
 	{
 		$this->header = $header;
 
@@ -106,9 +106,9 @@ class Net
 	 * @param String $status
 	 * @return Yakovmeister\Weebo\Component\Net::status
 	 */
-	public function setStatus($status)
+	public function setStatus($status = 404)
 	{
-		$this->status = $status;
+		$this->status = $status ?? 404;
 
 		return $this;
 	}

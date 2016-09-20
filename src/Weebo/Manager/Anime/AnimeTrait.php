@@ -299,5 +299,14 @@ trait AnimeTrait
 
 		return trim(trim($watchURL, " "), "/");	
 	}
+
+	/**
+	 * [check if source is empty]
+	 * @return boolean 
+	 */
+	public function isSourceEmpty()
+	{
+		return empty($this->getSource());
+	}
 	
 }

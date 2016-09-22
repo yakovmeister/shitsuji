@@ -11,11 +11,15 @@ class Speech
 
 	protected $active = "normal";
 
+	protected $dir;
+
 	public function __construct(Finder $finder)
 	{
+		$this->dir = dirname(dirname(dirname(__DIR__))).DIRECTORY_SEPARATOR."speech";
+
 		$this->finder = $finder;
 
-		$this->finder->files()->ignoreUnreadableDirs()->in("./speech");
+		$this->finder->files()->ignoreUnreadableDirs()->in($this->dir);
 	}
 
 	public function setSpeechPreference($speechPreference = "normal")
@@ -49,7 +53,7 @@ class Speech
 	{
 		if(count($this->finder->name("{$this->fetchSpeechPreference()}.php")) <= 0) throw new FileNotFoundException;
 
-		return @require("./speech/{$this->fetchSpeechPreference()}.php");
+		return @require("{$this->dir}/{$this->fetchSpeechPreference()}.php");
 	}
 
 }

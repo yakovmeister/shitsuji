@@ -47,6 +47,7 @@ class DownloadManager
 		if(file_exists($this->getDownloadPathWithName())) 
 		{
 			$this->io->newLn()->newLn();
+		
 			$this->io->write("Skipping {$this->getName()}. File Found")->newLn()->newLn(); 
 		}
 		else
@@ -54,7 +55,9 @@ class DownloadManager
 			$loaded = $this->net->load($this->getCurrentMirror(), [$this, "progressCallback"]);
 
 			if(($loaded->getResponseStatus() == Net::HTTP_NOT_FOUND) && ($this->getCurrentMirrorIndex() < count($this->getMirrors()))) {
+				
 				$this->set("mirrorIndex", $this->getCurrentMirrorIndex() + 1);
+				
 				return $this->fetchFile($this->metadata);
 			}
 

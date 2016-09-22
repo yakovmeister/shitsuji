@@ -2,10 +2,12 @@
 
 namespace Yakovmeister\Weebo\Component;
 
+use Yakovmeister\Weebo\Application;
+
 class IO
 {
 	protected static $instance;
-
+	
 	/**
 	 * @param  String $fileName
 	 * @param  Mixed $content = null
@@ -127,7 +129,7 @@ class IO
     public static function getInstance()
     {
     	return empty(static::$instance) 
-    			? new IO
+    			? Application::getInstance()->make(IO::class)
     			: static::$instance;
     }
 

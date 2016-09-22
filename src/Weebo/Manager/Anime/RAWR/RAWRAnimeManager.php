@@ -157,6 +157,7 @@ class RAWRAnimeManager implements AnimeInterface
 
 
             $extractLinkProgress = round($key / count($this->getEpisodesPreference()) * 100);
+            
             IO::getInstance()->write("Compiling: {$extractLinkProgress}%")->retLn();
 		}
 

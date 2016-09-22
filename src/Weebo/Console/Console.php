@@ -5,7 +5,9 @@ namespace Yakovmeister\Weebo\Console;
 use Yakovmeister\Weebo\Component\IO;
 use Yakovmeister\Weebo\Application;
 use Yakovmeister\Weebo\Manager\Anime\RAWR\RAWRAnimeManager;
+use Yakovmeister\Weebo\Manager\Anime\HentaiHaven\HHavenManager;
 use Yakovmeister\Weebo\Manager\DownloadManager as Download;
+use Yakovmeister\Weebo\Component\Speech;
 
 
 class Console
@@ -14,6 +16,8 @@ class Console
 	protected $init = false;
 
 	protected $io;
+
+	protected $speech;
 
 	protected $anime = [
 		"language" => "subbed",
@@ -24,11 +28,13 @@ class Console
 
 	protected $downloadManager;
 
-	public function __construct(IO $io, Download $download)
+	public function __construct(IO $io, Download $download, Speech $speech)
 	{
 		$this->io = $io;
 
 		$this->downloadManager = $download;
+
+		$this->speech = $speech;
 
 		$this->init = true;
 
@@ -45,58 +51,88 @@ class Console
 
 			switch(strtolower($input))
 			{
+				/* Language Selection Modes */
 				case "language:sub":
 				case "language:subbed":
 					$this->setLanguage("subbed");
-					$this->io->newLn()->newLn()->write("Language Preference Updated to: subtitled")->newLn()->newLn();
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("lang_pref_up", [":language" => "subtitled"])
+					)->newLn()->newLn();
 					break;
 				case "language:dub":
 				case "language:dubbed":
 					$this->setLanguage("dubbed");
-					$this->io->newLn()->newLn()->write("Language Preference Updated to: dubbed")->newLn()->newLn();
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("lang_pref_up", [":language" => "dubbed"])
+					)->newLn()->newLn();
 					break;
 				case "language:raw":
 					$this->setLanguage("raw");
-					$this->io->newLn()->newLn()->write("Language Preference Updated to: raw")->newLn()->newLn();
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("lang_pref_up", [":language" => "raw"])
+					)->newLn()->newLn();
+					break;
+				/* Language Selection Modes End */
+
+				/* Quality Selection Modes */
+				case "quality:1080":
+				case "quality:1080p":
+					$this->setQuality("1080p");
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("qlty_pref_up", [":quality" => "1080p"])
+					)->newLn()->newLn();
 					break;
 				case "quality:720":
 				case "quality:720p":
 					$this->setQuality("720p");
-					$this->io->newLn()->newLn()->write("Quality Preference Updated to: 720p")->newLn()->newLn();
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("qlty_pref_up", [":quality" => "720p"])
+					)->newLn()->newLn();
 					break;
 				case "quality:480":
 				case "quality:480p":
 					$this->setQuality("480p");
-					$this->io->newLn()->newLn()->write("Quality Preference Updated to: 480p")->newLn()->newLn();
+					$this->io->newLn()->newLn()->write(
+						$this->speech->get("qlty_pref_up", [":quality" => "480p"])
+					)->newLn()->newLn();
 					break;
+				/* Quality Selection Modes End */
+
+				/* Source Selection Modes */
 				case "source:hentai-haven":
 					$this->setAnimeSource("hentai-haven");
 					break;
 				case "source:rawr":
 					$this->setAnimeSource("rawr");
 					break;
+				/* Source Selection Modes End */
+
+				/* Console Commands */
 				case "console:exit":
 					$this->init = false;
 					break;
 				case "console:help":
 
 					break;
+				/* Console Commands End */
 				
 				default:
-					if(empty($input)) return $this->io->newLn()->write("Bye bye!");
+					if(empty($input)) return $this->io->newLn()->write( $this->speech->get("quit") );
 
 					$this->commenceSearcher($input);
 
 					break;
 			}
-
-			$input = null;
 		}
 	}
 
 	public function commenceSearcher($keyword)
 	{
-		$this->io->newLn()->newLn()->write("Searching {$keyword}...")->newLn();
+
+		$this->io->newLn()->newLn()->write(
+			$this->speech->get("search", [":search-keyword" => $keyword])
+		)->newLn();
+		
 		$this->animeManager->searchAnime($keyword, $this->getQuality(), $this->getLanguage());
 
 		$searchResultCount = count($this->animeManager->getAnime());
@@ -107,16 +143,26 @@ class Console
 			// Search and display anime, after searching and displaying users can interact by
 			// simply providing an input number of the anime the users wants to download
 			//--------------------------------------------------------------------------------------
-			$this->io->write("{$searchResultCount} result/s found for {$keyword}")->newLn()->newLn();
+			$this->io->write(
+				$this->speech->get("search_result_found", [
+					":result-count"   => $searchResultCount,
+					":search-keyword" => $keyword
+				])
+			)->newLn()->newLn();
 
 			$this->display($this->animeManager->getAnime(), "title");
 
 			$this->io->newLn();
 			
-			$animeSelection = $this->io->read("Type the number of the anime you want to download: ");
+			$animeSelection = $this->io->read($this->speech->get("anime_selection"));
 
 			if($animeSelection > $searchResultCount || empty($animeSelection)) {
-				$this->io->write("Invalid Selection, Exiting...")->newLn(); return $this->init = false;
+				
+				$this->io->write(
+					$this->speech->get("invalid_selection")
+				)->newLn(); 
+				
+				return $this->init = false;
 			}
 			
 			$this->animeManager->selectAnime($animeSelection);
@@ -135,27 +181,37 @@ class Console
 			
 			$episodeCount = count($this->animeManager->getEpisodes());
 			
-			$this->io->newLn()
-			->write("{$this->animeManager->getAnime()[$this->animeManager->getAnimePreference()]["title"]} has {$episodeCount} episodes")
-			->newLn()->newLn();
+			$this->io->newLn()->write(
+				$this->speech->get("episodes", [
+					":anime" => $this->animeManager->getAnime()[$this->animeManager->getAnimePreference()]["title"],
+					":episode-count" => $episodeCount
+				])
+			)->newLn()->newLn();
 			
 			$this->display($this->animeManager->getEpisodes(), "episode");
 			
-			$this->io->write("[*] to download all episodes")->newLn();
+			$this->io->write(
+				$this->speech->get("all_episodes")
+			)->newLn();
 			
-			$episodeSelection = $this->io->read("Type the episode number you want to download: ");
+			$episodeSelection = $this->io->read($this->speech->get("episode_selection"));
 			
 			if(empty($episodeSelection) || $episodeSelection > $episodeCount) {
-				$this->io->write("Invalid Selection, Exiting...")->newLn(); return $this->init = false;
+				
+				$this->io->write(
+					$this->speech->get("invalid_selection")
+				)->newLn(); 
+
+				return $this->init = false;
 			}
 			
 			$this->animeManager->selectEpisodes($episodeSelection);
 
-			$this->io->write("Compiling Episodes and Mirrors... This may take a minute. Please Wait.")->newLn();
+			$this->io->write($this->speech->get("compile_episode"))->newLn();
 			
 			$this->animeManager->makeDirectLinks();
 			
-			$this->io->write("Episodes and Mirrors Compiled!");
+			$this->io->write($this->speech->get("compile_episode_ok"));
 
 			//---------------------------------------------------------------------------------------
 			// Start downloading after gathering all the information needed
@@ -164,6 +220,10 @@ class Console
 
 			
 		}
+
+		$this->io->write(
+			$this->speech->get("search_result_fail", [":search-keyword" => $keyword])
+		)->newLn();
 
 		// reinstantiate anime source object
 		return $this->setAnimeSource();
@@ -175,13 +235,9 @@ class Console
 		{
 			$key += 1;
 			if(!is_null($arrayParam))
-			{
 				$this->io->write("[{$key}] {$value[$arrayParam]}")->newLn();
-			}
 			else
-			{
 				$this->io->write("[{$key}] {$value}")->newLn();	
-			}
 		}
 	}
 
@@ -194,11 +250,16 @@ class Console
 	{
 		switch ($animeSource) {
 			case "hentai-haven":
+
+			///	$this->animeManager = Application::getInstance()->make(HHavenManager::class);
+
 				$this->io->newLn()->newLn()->write("[!] Hentai Haven soon to be added")->newLn()->newLn()->newLn();
 			case "rawr":
 				$this->animeManager = Application::getInstance()->make(RAWRAnimeManager::class);
 				
-				$this->io->newLn()->newLn()->write("[!] Source Switched to Rawr Anime")->newLn()->newLn()->newLn();
+				$this->io->newLn()->newLn()->write(
+					$this->speech->get("source_switch", [":source" => "rawr anime"])
+				)->newLn()->newLn()->newLn();
 				break;
 			default:
 				$this->animeManager = Application::getInstance()->make(RAWRAnimeManager::class);
@@ -208,6 +269,10 @@ class Console
 		return $this;
 	}
 
+	/**
+	 * [set language preference of the anime]
+	 * @return $this
+	 */
 	public function setLanguage($animeLanguage = "subbed")
 	{
 		$this->anime["language"] = $animeLanguage;
@@ -215,6 +280,10 @@ class Console
 		return $this;
 	}
 
+	/**
+	 * [set language preference of the anime]
+	 * @return $this
+	 */
 	public function setQuality($animeQuality = "720p")
 	{
 		$this->anime["quality"] = $animeQuality;
@@ -222,11 +291,19 @@ class Console
 		return $this;
 	}
 
+	/**
+	 * [get language preference of the anime]
+	 * @return $this->anime["quality"]
+	 */
 	public function getLanguage()
 	{
 		return $this->anime["language"];
 	}
 
+	/**
+	 * [get quality preference of the anime]
+	 * @return $this->anime["quality"]
+	 */
 	public function getQuality()
 	{
 		return $this->anime["quality"];

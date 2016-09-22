@@ -9,7 +9,7 @@ class Speech
 {
 	protected $finder;
 
-	protected $active = "butler";
+	protected $active = "normal";
 
 	public function __construct(Finder $finder)
 	{
@@ -18,7 +18,7 @@ class Speech
 		$this->finder->files()->ignoreUnreadableDirs()->in("./speech");
 	}
 
-	public function setSpeech($speechPreference = "butler")
+	public function setSpeechPreference($speechPreference = "normal")
 	{
 		$this->active = $speechPreference;
 
@@ -36,7 +36,7 @@ class Speech
 			
 			$message = str_replace($key, $value, $message);
 		}
-		
+
 		return $message;
 	}
 

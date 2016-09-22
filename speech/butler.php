@@ -1,16 +1,16 @@
 <?php
 
 return [
-	"anime_selection" => "Type the number of the anime you want to download: ",
-	"episode_selection" => "Type the episode number you want to download: ",
+	"anime_selection" => "What anime do you want my lord? ",
+	"episode_selection" => "Please select the episode/s you want to download, my lord: ",
 
-	"lang_pref_up" => "Language Preference Updated to : :language",
-	"qlty_pref_up" => "Quality Preference Updated to : :quality",
+	"lang_pref_up" => "Your Video Language has been updated to :language my lord",
+	"qlty_pref_up" => "Your Video Quality has been updated to :quality my lord",
 
 	"source_switch" => "[!] Source switched to :source",
 
-	"compile_episode" => "Compiling Episodes with Mirrors, this may take a minute or two.",
-	"compile_episode_ok" => "Episode Preference successfully compiled!",
+	"compile_episode" => "Let me compile all the episodes together with the links my lord!",
+	"compile_episode_ok" => "I've worked your episodes, you may now download it my lord",
 
 	"search" => "Searching :search-keyword",
 	"search_result_found" => ":result-count result/s found for :search-keyword",

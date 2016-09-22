@@ -106,7 +106,17 @@ class Console
 					$this->setAnimeSource("rawr");
 					break;
 				/* Source Selection Modes End */
-
+				/* Speech Selection */
+				case "speech:butler":
+					$this->speech->setSpeechPreference("butler");
+					break;
+				case "speech:waifu":
+					$this->speech->setSpeechPreference("waifu");
+					break;
+				case "speech:normal":
+					$this->speech->setSpeechPreference("normal");
+					break;
+				/* Speech Selection End */
 				/* Console Commands */
 				case "console:exit":
 					$this->init = false;

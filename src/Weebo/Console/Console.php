@@ -216,7 +216,7 @@ class Console
 			}
 			
 			$this->animeManager->selectEpisodes($episodeSelection);
-
+			
 			$this->io->write($this->speech->get("compile_episode"))->newLn();
 			
 			$this->animeManager->makeDirectLinks();

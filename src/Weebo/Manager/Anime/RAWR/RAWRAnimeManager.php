@@ -208,6 +208,7 @@ class RAWRAnimeManager implements AnimeInterface
 	 */
 	public function startDownload()
 	{
+
 		foreach ($this->getEpisodesPreference() as $key => $value) 
 		{
 			$this->downloadManager->fetchFile([

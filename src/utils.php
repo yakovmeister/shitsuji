@@ -79,7 +79,6 @@ if(!function_exists("separateList"))
         $num = [];
 
         switch ($data) {
-
             case strpos($data, "-") > 0:
             
                 $data = explode("-", $data);
@@ -95,6 +94,13 @@ if(!function_exists("separateList"))
                 $data = explode(",", $data);
 
                 return $data;
+            default:
+                if(ctype_digit($data))
+                    array_push($num, $data);
+                else
+                    array_push($num, 0);
+
+                return $num;
         }
 
         return $num;

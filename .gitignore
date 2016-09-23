@@ -1,0 +1,4 @@
+/tests/DirectoryCreationTest/*
+/tests/FileCreationTest/*
+/vendor
+/composer.lock

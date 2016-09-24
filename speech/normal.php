@@ -19,5 +19,5 @@ return [
 	"all_episodes" => "[*] Download all episodes",
 	"invalid_selection" => "Invalid Selection, exiting...",
 
-	"quit" => "bye bye~"
+	"quit" => "Terminating..."
  ];

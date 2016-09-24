@@ -122,7 +122,10 @@ class Console
 					$this->init = false;
 					break;
 				case "console:help":
-
+					$this->showHelp();
+					break;
+				case "console:info":
+					$this->showVersionInformation();
 					break;
 				/* Console Commands End */
 				
@@ -251,6 +254,33 @@ class Console
 		}
 	}
 
+	public function showHelp()
+	{
+		$this->showVersionInformation();
+
+		$this->io->write([
+			"by default all keywords typed inside this app will be used as search key",
+			"except of course the keys mentioned below",
+			"---------------------------------------------",
+			"language:[language]        - select language preference",
+			"quality:[quality]          - select quality preference",
+			"source:[source]            - select anime source",
+			"speech:[speech]            - select speech",
+			"console:exit               - exit from the app",
+			"console:help               - display this text",
+			"console:version            - display version",
+			"---------------------------------------------"         
+		]);
+	}
+
+	public function showVersionInformation()
+	{
+		$this->io->write([
+			Application::NAME." v".Application::VERSION,
+			"-------------------------",
+		]);
+	}
+
 	/**
 	 * [set anime source]
 	 * @param String $animeSource [anime source]
@@ -263,7 +293,7 @@ class Console
 
 			///	$this->animeManager = Application::getInstance()->make(HHavenManager::class);
 
-				$this->io->newLn()->newLn()->write("[!] Hentai Haven soon to be added")->newLn()->newLn()->newLn();
+				$this->io->newLn()->newLn()->write("[!] Hentai Haven soon to be added");
 			case "rawr":
 				$this->animeManager = Application::getInstance()->make(RAWRAnimeManager::class);
 				

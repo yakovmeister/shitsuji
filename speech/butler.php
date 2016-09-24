@@ -7,17 +7,17 @@ return [
 	"lang_pref_up" => "Your Video Language has been updated to :language my lord",
 	"qlty_pref_up" => "Your Video Quality has been updated to :quality my lord",
 
-	"source_switch" => "[!] Source switched to :source",
+	"source_switch" => "[!] I've successfully switched :source as your anime source",
 
 	"compile_episode" => "Let me compile all the episodes together with the links my lord!",
 	"compile_episode_ok" => "I've worked your episodes, you may now download it my lord",
 
-	"search" => "Searching :search-keyword",
-	"search_result_found" => ":result-count result/s found for :search-keyword",
-	"search_result_fail" => "Cannot find any match for :search-keyword",
-	"episodes" => ":anime has :episode-count episodes",
+	"search" => "I'm looking for :search-keyword, please wait a moment",
+	"search_result_found" => "I've found :result-count result/s found for :search-keyword my lord",
+	"search_result_fail" => "I apologize for not finding any match for :search-keyword",
+	"episodes" => "Selected anime: :anime has :episode-count episodes",
 	"all_episodes" => "[*] Download all episodes",
-	"invalid_selection" => "Invalid Selection, exiting...",
+	"invalid_selection" => "I can't understand what you're doing, I will not terminate my lord",
 
-	"quit" => "bye bye~"
+	"quit" => "Feel free to use me again my lord, good bye!"
  ];

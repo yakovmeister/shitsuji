@@ -8,7 +8,7 @@ class Application extends Container
 {
     const NAME = "butler";
 
-    const VERSION = "0.1.0";
+    const VERSION = "1.2.0";
 
 	public function __construct()
 	{

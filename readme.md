@@ -4,7 +4,7 @@ Mighty butler is here to serve you! Shitsuji is a simple Command Line Interface 
 
 # Note - 1.2 is no longer working #
 ---
-I've been heavily depending on rawranime.tv for this project, since rawranime.tv is no longer alive, this project might as well end... I try to find more source so we can keep this going.
+I've been heavily depending on rawranime.tv for this project, since rawranime.tv is no longer alive, this project might as well end... I'll try to find more source so we can keep this going.
 
 ##Requirements##
 * PHP 7 or higher

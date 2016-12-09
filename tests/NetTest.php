@@ -30,4 +30,15 @@ class NetTest extends TestCase
 
 		$this->assertTrue($this->net->getResponseStatus() == 404);
 	}
+
+	public function testReIndexing()
+	{
+		$url = 'https://www.google.com.ph/asdq2312';
+
+		$this->net->load($url);
+
+		$reindexed = $this->net->reIndexHeader($this->net->getResponseHeader());
+
+		var_dump($reindexed);
+	}
 }

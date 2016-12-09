@@ -1,8 +1,8 @@
 <?php
 
-namespace Yakovmeister\Weebo\Component;
+namespace Yakovmeister\Weebo\Component\Traits;
 
-trait FileInformationTrait
+trait File
 {
 
     protected $name;

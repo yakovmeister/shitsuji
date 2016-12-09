@@ -6,6 +6,10 @@ use Yakovmeister\Weebo\Application;
 
 class IO
 {
+	/**
+	 * [Singleton Instance for IO]
+	 * @var [type]
+	 */
 	protected static $instance;
 	
 	/**

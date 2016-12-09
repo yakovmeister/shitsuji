@@ -69,7 +69,7 @@ class Net
 
 		$this->setResponse(@file_get_contents($url, false, $ctx));		
 
-		$this->setHeader(@$http_response_header);
+		$this->setHeader($this->reIndexHeader(@$http_response_header));
 
 		$this->setStatus((int)substr($this->getResponseHeader(0), 9, 3));
 
@@ -106,9 +106,9 @@ class Net
 	 * @param String $status
 	 * @return Yakovmeister\Weebo\Component\Net::status
 	 */
-	public function setStatus($status = 404)
+	public function setStatus($status = HTTP_NOT_FOUND)
 	{
-		$this->status = $status ?? 404;
+		$this->status = $status ?? HTTP_NOT_FOUND;
 
 		return $this;
 	}
@@ -145,6 +145,39 @@ class Net
 	public function getResponseStatus()
 	{
 		return $this->status;
+	}
+
+	/**
+	 * [simply re-index (make header name as index instead of numeric indexing) our header to avoid confusion]
+	 * @param  array  $header [header]
+	 * @return array          [re-indexed header]
+	 */
+	public function reIndexHeader(array $header)
+	{
+		foreach ($header as $key => $value) 
+		{
+			$value = explode(":", $value);
+			
+			if(is_array($value) && count($value) > 1) 
+			{
+				if(isset($header[$key]))
+				{
+					unset($header[$key]);
+					$header[trim($value[0])] = trim($value[1]);
+				}
+			}
+			else
+			{
+				if( preg_match( "#HTTP/[0-9\.]+\s+([0-9]+)#", $value[0], $output ) || 
+					preg_match( "#HTTP/[0-9\.]+\s+([0-9]+)#", $value[1], $output ) )
+				{
+					unset($header[$key]);
+                	$header['response_code'] = intval($output[1]);
+				}
+			}
+		}
+
+		return $header;
 	}
 
 }

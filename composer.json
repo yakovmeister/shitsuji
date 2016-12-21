@@ -14,7 +14,9 @@
             "Yakovmeister\\" : "src/"            
         },
         "files": [
-            "src/utils.php"
+            "src/utils.php",
+            "lib/cloudflare-bypass/cloudflareClass.php",
+            "lib/cloudflare-bypass/httpProxyClass.php"
         ]
     },
     "minimum-stability": "dev"

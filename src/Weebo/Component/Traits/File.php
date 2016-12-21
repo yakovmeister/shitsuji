@@ -5,14 +5,34 @@ namespace Yakovmeister\Weebo\Component\Traits;
 trait File
 {
 
+    /**
+     * [the name of the file (without extension)]
+     * @var string $name
+     */
     protected $name;
 
+    /**
+     * [the file extension]
+     * @var string $extension
+     */
     protected $extension;
 
+    /**
+     * [directory on which the file will be saved]
+     * @var string $downloadPath
+     */
     protected $downloadPath;
 
+    /**
+     * [alternative links (if there's any, just encase the first link doesn't work)]
+     * @var array $mirrors
+     */
     protected $mirrors = [];
 
+    /**
+     * [mirror (alternative link) index]
+     * @var integer
+     */
     protected $mirrorIndex = 0;
 
     /**

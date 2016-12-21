@@ -8,7 +8,7 @@ class IO
 {
 	/**
 	 * [Singleton Instance for IO]
-	 * @var [type]
+	 * @var Object
 	 */
 	protected static $instance;
 	
@@ -130,6 +130,10 @@ class IO
         return @md5_file($file);
     }
 
+    /**
+     * [create a singleton instance]
+     * @return Object
+     */
     public static function getInstance()
     {
     	return empty(static::$instance) 

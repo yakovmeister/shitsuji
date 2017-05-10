@@ -10,7 +10,7 @@
     "production": "npm run clean && node bin/master"
   },
   "bin": {
-    "shitsuji": "bin/index"
+    "shitsuji": "./bin/index"
   },
   "author": "",
   "license": "ISC",

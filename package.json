@@ -2,7 +2,7 @@
   "name": "shitsuji",
   "version": "3.0.5",
   "description": "our mighty butler rewritten using node",
-  "main": "src/index.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "mkdir dist && babel src -s -d dist",
@@ -10,11 +10,12 @@
     "production": "npm run clean && node bin/master"
   },
   "bin": {
-    "shitsuji": "dist/index.js"
+    "shitsuji": "index"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
+
     "anime-scraper": "^2.1.6",
     "async": "^2.4.0",
     "cloudscraper": "^1.4.1",

@@ -1,6 +1,6 @@
 {
-  "name": "untitled",
-  "version": "0.1.0",
+  "name": "shitsuji",
+  "version": "3.0.0",
   "description": "our mighty butler rewritten using node",
   "main": "src/index.js",
   "scripts": {

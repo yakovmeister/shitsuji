@@ -1,6 +1,6 @@
 {
   "name": "shitsuji",
-  "version": "3.0.7",
+  "version": "3.0.8",
   "description": "our mighty butler rewritten using node",
   "main": "index.js",
   "scripts": {
@@ -10,7 +10,7 @@
     "production": "npm run clean && node bin/master"
   },
   "bin": {
-    "shitsuji": "index"
+    "shitsuji": "bin/index"
   },
   "author": "",
   "license": "ISC",
